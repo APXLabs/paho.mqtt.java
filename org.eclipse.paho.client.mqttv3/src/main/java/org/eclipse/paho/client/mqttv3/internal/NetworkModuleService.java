@@ -93,9 +93,11 @@ public class NetworkModuleService {
 			URI brokerUri = new URI(address);
 			applyRFC3986AuthorityPatch(brokerUri);
 			String scheme = brokerUri.getScheme().toLowerCase();
-			for (NetworkModuleFactory factory : FACTORY_SERVICE_LOADER) {
-				if (factory.getSupportedUriSchemes().contains(scheme)) {
-					return factory.createNetworkModule(brokerUri, options, clientId);
+			synchronized (FACTORY_SERVICE_LOADER) {
+				for (NetworkModuleFactory factory : FACTORY_SERVICE_LOADER) {
+					if (factory.getSupportedUriSchemes().contains(scheme)) {
+						return factory.createNetworkModule(brokerUri, options, clientId);
+					}
 				}
 			}
 			/*

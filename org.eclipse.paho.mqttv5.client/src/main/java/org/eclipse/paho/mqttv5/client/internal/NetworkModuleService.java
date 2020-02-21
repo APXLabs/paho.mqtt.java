@@ -61,10 +61,12 @@ public class NetworkModuleService {
 				throw new IllegalArgumentException("missing scheme in broker URI: " + brokerUri);
 			}
 			scheme = scheme.toLowerCase();
-			for (NetworkModuleFactory factory : FACTORY_SERVICE_LOADER) {
-				if (factory.getSupportedUriSchemes().contains(scheme)) {
-					factory.validateURI(uri);
-					return;
+			synchronized (FACTORY_SERVICE_LOADER) {
+				for (NetworkModuleFactory factory : FACTORY_SERVICE_LOADER) {
+					if (factory.getSupportedUriSchemes().contains(scheme)) {
+						factory.validateURI(uri);
+						return;
+					}
 				}
 			}
 			throw new IllegalArgumentException("no NetworkModule installed for scheme \"" + scheme
